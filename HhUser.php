@@ -9,13 +9,17 @@ namespace robot;
 
 
 class HhUser extends AUser {
-    const DOMAIN = 'hh.ru';
+    const DOMAIN = 'http://hh.ru';
 
     public function __construct(HhUserIdentity $userIdentity) {
         parent::__construct($userIdentity);
     }
 
     protected function login() {
+        if ($this->isAuthenticated()) {
+            return;
+        }
+
         $requestProvider = new HttpRequestProvider();
 
         $request = new HttpRequest(self::DOMAIN."/account/login");
@@ -46,7 +50,11 @@ class HhUser extends AUser {
                             |value=['\"]([^>]*?)['\"][^>]*?name=['\"]{$inputName}['\"])
                             [^>]*?>/simux", $formMarkup, $value))
             {
-                $loginData[$inputName] = ($value[1]) ? $value[1] : $value[2];
+                if (isset($value[1]) && $value[1]) {
+                   $loginData[$inputName] = $value[1];
+                } elseif (isset($value[2]) && $value[2]) {
+                   $loginData[$inputName] = $value[2];
+                }
             }
         }
 
@@ -60,6 +68,27 @@ class HhUser extends AUser {
         if ($response->getHeader("http_code") != 200 ) {
             throw new AuthenticationException("Login page is not available!");
         }
+    }
+
+    protected function isAuthenticated() {
+        $requestProvider = new HttpRequestProvider();
+
+        $request = new HttpRequest(self::DOMAIN);
+        $request->setOpts(array('cookie' => $this->userIdentity->getCookieFile()));
+
+        $response = $requestProvider->sendRequest($request);
+
+        return preg_match("/<div[^>]*?data-qa=\"mainmenu_normalUserName\"[^>]*?>/sim", $response->getBody());
+    }
+
+    public function getResumes() {
+        $this->login();
+        $requestProvider = new HttpRequestProvider();
+        $request = new HttpRequest(self::DOMAIN);
+        $request->setOpts(array('cookie' => $this->userIdentity->getCookieFile()));
+
+        $response = $requestProvider->sendRequest($request);
+        return $response->getBody();
     }
 }
 

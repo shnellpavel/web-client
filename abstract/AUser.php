@@ -15,4 +15,5 @@ abstract class AUser {
     }
 
     abstract protected function login();
-} 
+    abstract protected function isAuthenticated();
+}

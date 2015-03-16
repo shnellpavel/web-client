@@ -11,11 +11,10 @@ namespace robot;
 class HttpRequestProvider extends ARequestProvider {
 
     /**
-     * @param HttpRequest $request
+     * @param ARequest $request
      * @return HttpResponse
      */
-    public function sendRequest(HttpRequest $request) {
-
+    public function sendRequest(ARequest $request) {
         $stdOpts = array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_POST => 0,
@@ -25,20 +24,10 @@ class HttpRequestProvider extends ARequestProvider {
             CURLOPT_SSL_VERIFYPEER => 0,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_VERBOSE => 0,
+//            CURLOPT_PROXY => '127.0.0.1:8888',
         );
         $ch = curl_init();
 
-        switch ($request->getMethod()) {
-            case "GET":
-                curl_setopt($ch, CURLOPT_URL, $request->getUrl()."?".http_build_query($request->getData()));
-                curl_setopt($ch, CURLOPT_POST, 0);
-                break;
-            case "POST":
-                curl_setopt($ch, CURLOPT_URL, $request->getUrl());
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
-                break;
-        }
 
         $curOpts = $request->getOpts() + $stdOpts;
 
@@ -52,6 +41,18 @@ class HttpRequestProvider extends ARequestProvider {
                     curl_setopt($ch, $opt, $value);
                     break;
             }
+        }
+
+        switch ($request->getMethod()) {
+            case HttpRequest::HTTP_GET:
+                curl_setopt($ch, CURLOPT_URL, $request->getUrl()."?".http_build_query($request->getData()));
+                curl_setopt($ch, CURLOPT_POST, 0);
+                break;
+            case HttpRequest::HTTP_POST:
+                curl_setopt($ch, CURLOPT_URL, $request->getUrl());
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
+                break;
         }
 
         $body = curl_exec($ch);
