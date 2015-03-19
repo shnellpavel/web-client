@@ -4,7 +4,7 @@
  * Date: 01.03.15
  * Time: 16:04
  */
-namespace robot;
+namespace web_client;
 
 abstract class AResponse {
     /* @var mixed */

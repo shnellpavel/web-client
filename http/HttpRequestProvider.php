@@ -5,8 +5,10 @@
  * Time: 19:53
  */
 
-namespace robot;
+namespace web_client\http;
 
+use web_client\ARequest;
+use web_client\ARequestProvider;
 
 class HttpRequestProvider extends ARequestProvider {
 

@@ -5,8 +5,9 @@
  * Time: 17:22
  */
 
-namespace robot;
+namespace web_client\http;
 
+use web_client\AResponse;
 
 class HttpResponse extends AResponse {
 

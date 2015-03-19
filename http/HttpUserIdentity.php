@@ -5,8 +5,9 @@
  * Time: 19:22
  */
 
-namespace robot;
+namespace web_client\http;
 
+use web_client\AUserIdentity;
 
 class HttpUserIdentity extends AUserIdentity {
     protected $cookieFile = null;

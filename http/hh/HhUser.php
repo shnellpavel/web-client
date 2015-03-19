@@ -5,8 +5,13 @@
  * Time: 17:25
  */
 
-namespace robot;
+namespace web_client\http\hh;
 
+
+use web_client\AUser;
+use web_client\exceptions\AuthenticationException;
+use web_client\http\HttpRequest;
+use web_client\http\HttpRequestProvider;
 
 class HhUser extends AUser {
     const DOMAIN = 'http://hh.ru';
@@ -83,7 +88,8 @@ class HhUser extends AUser {
 
     public function getResumes() {
         $this->login();
-        $requestProvider = new HttpRequestProvider();
+        $requestProvider = new HhResumeListProvider(50, 0);
+
         $request = new HttpRequest(self::DOMAIN);
         $request->setOpts(array('cookie' => $this->userIdentity->getCookieFile()));
 
@@ -91,5 +97,3 @@ class HhUser extends AUser {
         return $response->getBody();
     }
 }
-
-class AuthenticationException extends \Exception {}

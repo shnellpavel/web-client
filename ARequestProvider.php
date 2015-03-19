@@ -4,7 +4,7 @@
  * Date: 01.03.15
  * Time: 15:35
  */
-namespace robot;
+namespace web_client;
 
 abstract class ARequestProvider {
     protected $opts;

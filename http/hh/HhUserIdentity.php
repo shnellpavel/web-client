@@ -5,8 +5,10 @@
  * Time: 17:26
  */
 
-namespace robot;
+namespace web_client\http\hh;
 
+
+use web_client\http\HttpUserIdentity;
 
 class HhUserIdentity extends HttpUserIdentity {
 }

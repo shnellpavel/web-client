@@ -4,7 +4,9 @@
  * Date: 01.03.15
  * Time: 17:19
  */
-namespace robot;
+namespace web_client\http;
+
+use web_client\ARequest;
 
 class HttpRequest extends ARequest {
     const HTTP_GET = "GET";
