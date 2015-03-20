@@ -6,30 +6,32 @@
  */
 namespace web_client;
 
+use web_client\http\AHttpData;
+
 abstract class ARequest {
     /* @var string */
     protected $url;
-    /* @var array */
+    /* @var AHttpData */
     protected $data;
     /* @var array */
     protected $opts;
 
-    public function __construct($url = '', $data = array(), $opts = array()) {
+    public function __construct($url = '', $data, $opts = array()) {
         $this->url = $url;
         $this->data = $data;
         $this->opts = $opts;
     }
 
     /**
-     * @param array $data
+     * @param AHttpData $data
      */
-    public function setData($data)
+    public function setData(AHttpData $data)
     {
         $this->data = $data;
     }
 
     /**
-     * @return array
+     * @return AHttpData
      */
     public function getData()
     {

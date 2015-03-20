@@ -15,7 +15,7 @@ class HttpRequest extends ARequest {
     /* @var string */
     protected $method;
 
-    public function __construct($url = '', $data = array(), $type = self::HTTP_GET, $opts = array()) {
+    public function __construct($url = '', AHttpData $data = null, $type = self::HTTP_GET, $opts = array()) {
         parent::__construct($url, $data, $opts);
         $this->method = $type;
     }

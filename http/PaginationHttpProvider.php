@@ -10,36 +10,46 @@ namespace web_client\http;
 class PaginationHttpProvider extends HttpRequestProvider {
     protected $curPage;
     protected $pageParam;
-    protected $pageLimit;
+    protected $minPage;
+    protected $maxPage;
 
-    public function __construct($pageLimit, $startPage = 1, $pageParam = 'page', $opts = array()) {
+    public function __construct($maxPage, $minPage = 1, $startPage = 1, $pageParam = 'page', $opts = array()) {
         parent::__construct($opts);
         $this->curPage = $startPage;
         $this->pageParam = $pageParam;
-        $this->pageLimit = ($pageLimit > 1) ? $pageLimit : 1;
+        $this->maxPage = $minPage;
+        $this->maxPage = ($this->maxPage > $this->minPage) ? $this->maxPage : $this->minPage;
     }
 
     public function next(HttpRequest $request) {
-        if ($this->curPage >= $this->pageLimit) {
+        if ($this->curPage > $this->maxPage) {
             return null;
         }
 
-        $this->curPage++;
         $data = $request->getData();
-        $data[$this->pageParam] = $this->curPage;
+        if ($data instanceof AHttpData) {
+            $data->page = $this->curPage;
+        } else {
+            $data[$this->pageParam] = $this->curPage;
+        }
+        $this->curPage++;
         $request->setData($data);
         return $this->sendRequest($request);
     }
 
 
     public function prev(HttpRequest $request) {
-        if ($this->curPage <= 1) {
+        if ($this->curPage < $this->minPage) {
             return null;
         }
 
-        $this->curPage--;
         $data = $request->getData();
-        $data[$this->pageParam] = $this->curPage;
+        if ($data instanceof AHttpData) {
+            $data->page = $this->curPage;
+        } else {
+            $data[$this->pageParam] = $this->curPage;
+        }
+        $this->curPage--;
         $request->setData($data);
         return $this->sendRequest($request);
     }

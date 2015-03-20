@@ -86,14 +86,36 @@ class HhUser extends AUser {
         return preg_match("/<div[^>]*?data-qa=\"mainmenu_normalUserName\"[^>]*?>/sim", $response->getBody());
     }
 
-    public function getResumes() {
+    public function getResumes(ResumeListData $data) {
         $this->login();
-        $requestProvider = new HhResumeListProvider(50, 0);
+        $listProvider = new HhResumeListProvider(0, 0, 0);
+        $resumeProvider = new HttpRequestProvider();
+        $resumes = array();
 
-        $request = new HttpRequest(self::DOMAIN);
+        $request = new HttpRequest(self::DOMAIN."/search/resume", $data);
         $request->setOpts(array('cookie' => $this->userIdentity->getCookieFile()));
 
-        $response = $requestProvider->sendRequest($request);
-        return $response->getBody();
+        while ($response = $listProvider->next($request)) {
+            foreach ($response->getBody() as $url => $position) {
+                $resumeRequest = new HttpRequest(self::DOMAIN.$url);
+                $resumeRequest->setOpts(
+                    array(
+                        'cookie' => $this->userIdentity->getCookieFile(),
+                        CURLOPT_REFERER => $response->getHeader('url')
+                    )
+                );
+                $resumeResponse = new ResumeResponse($resumeProvider->sendRequest($resumeRequest));
+                $resume = $resumeResponse->getBody();
+                $resume['searchPosition'] = $position;
+
+                $resumes[] = $resume;
+                usleep(500000);
+            }
+            $opts = $request->getOpts();
+            $opts[CURLOPT_REFERER] = $response->getHeader('url');
+            $request->setOpts($opts);
+        }
+
+        return $resumes;
     }
 }

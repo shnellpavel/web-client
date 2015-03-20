@@ -11,7 +11,6 @@ use web_client\ARequest;
 use web_client\ARequestProvider;
 
 class HttpRequestProvider extends ARequestProvider {
-
     /**
      * @param ARequest $request
      * @return HttpResponse
@@ -45,15 +44,23 @@ class HttpRequestProvider extends ARequestProvider {
             }
         }
 
+        if (is_array($request->getData())) {
+            $params = http_build_query($request->getData());
+        } elseif ($request->getData() instanceof AHttpData ) {
+            $params = $request->getData()->toParams();
+        } else {
+            $params = '';
+        }
+
         switch ($request->getMethod()) {
             case HttpRequest::HTTP_GET:
-                curl_setopt($ch, CURLOPT_URL, $request->getUrl()."?".http_build_query($request->getData()));
+                curl_setopt($ch, CURLOPT_URL, $request->getUrl()."?".$params);
                 curl_setopt($ch, CURLOPT_POST, 0);
                 break;
             case HttpRequest::HTTP_POST:
                 curl_setopt($ch, CURLOPT_URL, $request->getUrl());
                 curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getData());
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
                 break;
         }
 
