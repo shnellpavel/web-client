@@ -7,10 +7,10 @@
 
 namespace web_client\http\hh;
 
-use web_client\AProcessedResponse;
 use web_client\exceptions\ProcessResponceException;
+use web_client\http\HttpProcessedResponse;
 
-class ResumeResponse extends AProcessedResponse {
+class ResumeResponse extends HttpProcessedResponse {
 
     protected function process() {
         $baseBody = $this->originalResponse->getBody();

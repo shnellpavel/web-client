@@ -13,7 +13,7 @@ class ResumeListData extends AHttpData {
     public $itemsOnPage = 100;
     public $orderBy = 'publication_time';
     public $areas;
-    public $expPeriod;
+    public $expPeriod = 'all_time';
     public $text;
     public $pos = 'full_text';
     public $logic = 'normal';
