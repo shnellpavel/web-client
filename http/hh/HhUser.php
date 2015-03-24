@@ -10,6 +10,7 @@ namespace web_client\http\hh;
 
 use web_client\AUser;
 use web_client\exceptions\AuthenticationException;
+use web_client\http\HttpData;
 use web_client\http\HttpRequest;
 use web_client\http\HttpRequestProvider;
 
@@ -48,7 +49,7 @@ class HhUser extends AUser {
 
         $inputNames = $inputNames[1];
 
-        $loginData = array();
+        $loginData = new HttpData();
         foreach ($inputNames as $inputName) {
             if (preg_match("/<[^>]*?
                             (?:name=['\"]{$inputName}['\"][^>]*?value=['\"]([^>]*?)['\"]
@@ -56,15 +57,15 @@ class HhUser extends AUser {
                             [^>]*?>/simux", $formMarkup, $value))
             {
                 if (isset($value[1]) && $value[1]) {
-                   $loginData[$inputName] = $value[1];
+                   $loginData->$inputName = $value[1];
                 } elseif (isset($value[2]) && $value[2]) {
-                   $loginData[$inputName] = $value[2];
+                   $loginData->$inputName = $value[2];
                 }
             }
         }
 
-        $loginData['username'] = $this->userIdentity->getLogin();
-        $loginData['password'] = $this->userIdentity->getPassword();
+        $loginData->username = $this->userIdentity->getLogin();
+        $loginData->password = $this->userIdentity->getPassword();
 
         $request->setMethod(HttpRequest::HTTP_POST);
         $request->setData($loginData);
@@ -86,7 +87,7 @@ class HhUser extends AUser {
         return preg_match("/<div[^>]*?data-qa=\"mainmenu_normalUserName\"[^>]*?>/sim", $response->getBody());
     }
 
-    public function getResumes(ResumeListData $data) {
+    public function getResumes(ResumeListData $data, $limit = null) {
         $this->login();
         $listProvider = new HhResumeListProvider(0, 0, 0);
         $resumeProvider = new HttpRequestProvider();
@@ -109,6 +110,10 @@ class HhUser extends AUser {
                 $resume['searchPosition'] = $position;
 
                 $resumes[] = $resume;
+
+                if ($limit != null && $limit > 0 && count($resumes) >= $limit) {
+                    return $resumes;
+                }
                 usleep(500000);
             }
             $opts = $request->getOpts();

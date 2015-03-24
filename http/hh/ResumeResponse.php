@@ -24,7 +24,7 @@ class ResumeResponse extends HttpProcessedResponse {
         $this->body['name'] = $name[1];
 
         // Телефоны
-        if (!preg_match_all('/itemprop="telephone"[^>]*?>(.*?)<\/div>/sim', $baseBody, $phones)) {
+        if (!preg_match_all('/itemprop="telephone"[^>]*?>(.*?)<\/(?:div|span)>/sim', $baseBody, $phones)) {
             $this->body['phones'] = null;
         } else {
             $this->body['phones'] = array_map(function ($phone) {
@@ -45,7 +45,7 @@ class ResumeResponse extends HttpProcessedResponse {
         if (!preg_match('/itemtype="http:\/\/schema.org\/Organization"[^>]*?>.*?<strong[^>]*?resume__experience__company"[^>]*?>(.*?)<\/strong>/sim', $baseBody, $lastCompany)) {
             $this->body['lastCompany'] = null;
         } else {
-            $this->body['lastCompany'] = $lastCompany[1];
+            $this->body['lastCompany'] = strip_tags($lastCompany[1]);
         }
 
         // Последняя должность
