@@ -51,7 +51,7 @@ class ResumeListData extends AHttpData {
             $res['text'] = $this->text;
         }
         if ($this->pos) {
-            $res['pos'] = implode(',', $this->pos);
+            $res['pos'] = (is_array($this->pos)) ? implode(',', $this->pos) : $this->pos;
         }
         if ($this->logic) {
             $res['logic'] = $this->logic;
