@@ -15,7 +15,7 @@ class ResumeListResponse extends HttpProcessedResponse {
         $baseBody = $this->originalResponse->getBody();
         $this->body = array();
 
-        if (!preg_match_all('/<tr.*?itemscope="itemscope".*?itemtype="http:\/\/schema.org\/Person".*?\/tr>/sim', $baseBody, $resumesBlocks)) {
+        if (!preg_match_all('/itemscope="itemscope".*?itemtype="http:\/\/schema.org\/Person".*?\/tr>/sim', $baseBody, $resumesBlocks)) {
             throw new ProcessResponceException("Resume block");
         }
 
