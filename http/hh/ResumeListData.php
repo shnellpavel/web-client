@@ -99,8 +99,10 @@ class ResumeListData extends AHttpData {
             $params .= '&specialization='.urlencode($specialization);
         }
 
-        foreach ($this->areas as $area) {
-            $params .= '&area='.urlencode($area);
+        if (count($this->areas) > 0) {
+            foreach ($this->areas as $area) {
+                $params .= '&area='.urlencode($area);
+            }
         }
 
         return $params;
