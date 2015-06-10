@@ -28,6 +28,7 @@ class ResumeListData extends AHttpData {
     public $ageTo;
     public $gender = 'unknown';
     public $searchPeriod = 0;
+    public $page = 0;
 
     // /search/resume?items_on_page=100&specialization=2.463&specialization=2.469&specialization=2.468&specialization=2.200&clusters=true&page=0
     /**
@@ -85,6 +86,9 @@ class ResumeListData extends AHttpData {
         }
         if ($this->searchPeriod) {
             $res['search_period'] = $this->searchPeriod;
+        }
+        if ($this->page) {
+            $res['page'] = $this->page;
         }
 
         return $res;

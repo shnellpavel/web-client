@@ -87,9 +87,9 @@ class HhUser extends AUser {
         return preg_match("/<div[^>]*?data-qa=\"mainmenu_normalUserName\"[^>]*?>/sim", $response->getBody());
     }
 
-    public function getResumes(ResumeListData $data, $limit = null) {
+    public function getResumes(ResumeListData $data, $limit = 500, $startPage = 0) {
         $this->login();
-        $listProvider = new HhResumeListProvider(0, 0, 0);
+        $listProvider = new HhResumeListProvider(49, 0, $startPage);
         $resumeProvider = new HttpRequestProvider();
         $resumes = array();
 
@@ -105,11 +105,12 @@ class HhUser extends AUser {
                         CURLOPT_REFERER => $response->getHeader('url')
                     )
                 );
-                $resumeResponse = new ResumeResponse($resumeProvider->sendRequest($resumeRequest));
-                $resume = $resumeResponse->getBody();
-                $resume['searchPosition'] = $position;
-
-                $resumes[] = $resume;
+                try {
+                    $resumeResponse = new ResumeResponse($resumeProvider->sendRequest($resumeRequest));
+                    $resume = $resumeResponse->getBody();
+                    $resume['searchPosition'] = $position;
+                    $resumes[] = $resume;
+                } catch (\Exception $e) {}
 
                 if ($limit != null && $limit > 0 && count($resumes) >= $limit) {
                     return $resumes;

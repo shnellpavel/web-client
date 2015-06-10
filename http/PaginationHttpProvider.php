@@ -15,9 +15,10 @@ class PaginationHttpProvider extends HttpRequestProvider {
 
     public function __construct($maxPage, $minPage = 1, $startPage = 1, $pageParam = 'page', $opts = array()) {
         parent::__construct($opts);
-        $this->curPage = $startPage;
+        $this->curPage = ($startPage >= 0) ? $startPage : 1;
         $this->pageParam = $pageParam;
-        $this->maxPage = $minPage;
+        $this->minPage = $minPage;
+        $this->maxPage = $maxPage;
         $this->maxPage = ($this->maxPage > $this->minPage) ? $this->maxPage : $this->minPage;
     }
 
