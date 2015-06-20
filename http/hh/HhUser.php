@@ -96,37 +96,39 @@ class HhUser extends AUser {
         $request = new HttpRequest(self::DOMAIN."/search/resume", $data);
         $request->setOpts(array('cookie' => $this->userIdentity->getCookieFile()));
 
-        while ($response = $listProvider->next($request)) {
-            try {
-                foreach ($response->getBody() as $url => $position) {
-                    $resumeRequest = new HttpRequest(self::DOMAIN.$url);
-                    $resumeRequest->setOpts(
-                        array(
-                            'cookie' => $this->userIdentity->getCookieFile(),
-                            CURLOPT_REFERER => $response->getHeader('url')
-                        )
-                    );
+        try {
+            while ($response = $listProvider->next($request)) {
+                try {
+                    foreach ($response->getBody() as $url => $position) {
+                        $resumeRequest = new HttpRequest(self::DOMAIN.$url);
+                        $resumeRequest->setOpts(
+                            array(
+                                'cookie' => $this->userIdentity->getCookieFile(),
+                                CURLOPT_REFERER => $response->getHeader('url')
+                            )
+                        );
 
-                    $resumeResponse = new ResumeResponse($resumeProvider->sendRequest($resumeRequest));
-                    $resume = $resumeResponse->getBody();
-                    $resume['searchPosition'] = $position;
-                    $resumes[] = $resume;
+                        $resumeResponse = new ResumeResponse($resumeProvider->sendRequest($resumeRequest));
+                        $resume = $resumeResponse->getBody();
+                        $resume['searchPosition'] = $position;
+                        $resumes[] = $resume;
 
+                        if ($limit != null && $limit > 0 && count($resumes) >= $limit) {
+                            return $resumes;
+                        }
+                        usleep(500000);
+                    }
+                } catch (\Exception $e) {
                     if ($limit != null && $limit > 0 && count($resumes) >= $limit) {
                         return $resumes;
                     }
                     usleep(500000);
                 }
-            } catch (\Exception $e) {
-                if ($limit != null && $limit > 0 && count($resumes) >= $limit) {
-                    return $resumes;
-                }
-                usleep(500000);
+                $opts = $request->getOpts();
+                $opts[CURLOPT_REFERER] = $response->getHeader('url');
+                $request->setOpts($opts);
             }
-            $opts = $request->getOpts();
-            $opts[CURLOPT_REFERER] = $response->getHeader('url');
-            $request->setOpts($opts);
-        }
+        } catch (\Exception $e) {}
 
         return $resumes;
     }
