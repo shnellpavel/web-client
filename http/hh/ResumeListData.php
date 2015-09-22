@@ -112,6 +112,15 @@ class ResumeListData extends AHttpData {
         return $params;
     }
 
+    public static function getAvailableLogic() {
+        return array(
+            "normal" => 'Все слова',
+            "any" => 'Любое из слов',
+            "phrase" => 'Точная фраза',
+            "except" => 'Не встречаются',
+        );
+    }
+
     public static function getAvailableExpPeriods() {
         return array(
             "all_time" => 'за всё время опыта',
