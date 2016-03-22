@@ -15,7 +15,7 @@ use web_client\http\HttpRequest;
 use web_client\http\HttpRequestProvider;
 
 class HhUser extends AUser {
-    const DOMAIN = 'http://hh.ru';
+    const DOMAIN = 'https://hh.ru';
 
     public function __construct(HhUserIdentity $userIdentity) {
         parent::__construct($userIdentity);
