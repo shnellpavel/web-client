@@ -17,7 +17,7 @@ class ResumeResponse extends HttpProcessedResponse {
         $this->body = array();
 
         // Имя
-        if (!preg_match('/class="resume__personal__name"[^>]*?>(.*?)</sim', $baseBody, $name)) {
+        if (!preg_match('/data-qa="resume-personal-name"[^>]*?>(.*?)</sim', $baseBody, $name)) {
             throw new ProcessResponceException("Current resume name");
         }
 
@@ -42,14 +42,14 @@ class ResumeResponse extends HttpProcessedResponse {
         }
 
         // Последний опыт
-        if (!preg_match('/itemtype="http:\/\/schema.org\/Organization"[^>]*?>.*?<strong[^>]*?resume__experience__company"[^>]*?>(.*?)<\/strong>/sim', $baseBody, $lastCompany)) {
+        if (!preg_match('/itemtype="http:\/\/schema.org\/Organization"[^>]*?>.*?<div[^>]*?itemprop="name"[^>]*?resume-block__sub-title"[^>]*?>(.*?)<\/div>/sim', $baseBody, $lastCompany)) {
             $this->body['lastCompany'] = null;
         } else {
             $this->body['lastCompany'] = strip_tags($lastCompany[1]);
         }
 
         // Последняя должность
-        if (!preg_match('/itemtype="http:\/\/schema.org\/Organization"[^>]*?>.*?<strong[^>]*?resume__experience__position"[^>]*?>(.*?)<\/div>/sim', $baseBody, $lastPosition)) {
+        if (!preg_match('/itemtype="http:\/\/schema.org\/Organization"[^>]*?>.*?<div[^>]*?resume-block-experience-position"[^>]*?>(.*?)<\/div>/sim', $baseBody, $lastPosition)) {
             $this->body['lastCompany'] = null;
         } else {
             $this->body['lastPosition'] = strip_tags($lastPosition[1]);
