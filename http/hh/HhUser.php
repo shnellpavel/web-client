@@ -37,7 +37,7 @@ class HhUser extends AUser {
             throw new AuthenticationException("Login page is not available!");
         }
 
-        if (!preg_match("/<form.*?\/account\/login\".*?>(.*?)<\/form>/simu", $response->getBody(), $formMarkup)) {
+        if (!preg_match("/<form.*?\/account\/login[^>]*?\".*?>(.*?)<\/form>/simu", $response->getBody(), $formMarkup)) {
             throw new AuthenticationException("Login page has changed markup.");
         }
 
