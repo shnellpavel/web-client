@@ -84,7 +84,7 @@ class HhUser extends AUser {
 
         $response = $requestProvider->sendRequest($request);
 
-        return preg_match("/<div[^>]*?data-qa=\"mainmenu_normalUserName\"[^>]*?>/sim", $response->getBody());
+        return preg_match("/<div[^>]*?data-qa=\"mainmenu_userName\"[^>]*?>/sim", $response->getBody());
     }
 
     public function getResumes(ResumeListData $data, $limit = 100, $startPage = 0) {
