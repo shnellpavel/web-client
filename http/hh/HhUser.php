@@ -9,7 +9,7 @@ use web_client\http\HttpRequest;
 use web_client\http\HttpRequestProvider;
 
 class HhUser extends AUser {
-    const DOMAIN = 'https://hh.ru';
+    const DOMAIN = 'https://novosibirsk.hh.ru';
 
     public function __construct(HhUserIdentity $userIdentity) {
         parent::__construct($userIdentity);
@@ -47,11 +47,10 @@ class HhUser extends AUser {
             $requestData = new HttpData();
             $requestData->attempt = 1;
             $requestData->nocookies = 1;
-            $request = new HttpRequest("https://novosibirsk.hh.ru/account/login", $requestData);
+            $request = new HttpRequest(self::DOMAIN."/account/login", $requestData);
             $request->setOpts(
                 array(
                     'cookie'           => $this->userIdentity->getCookieFile(),
-                    CURLOPT_REFERER => 'https://novosibirsk.hh.ru/account/login',
                     CURLOPT_HTTPHEADER => array("Cookie: ".$checkBrowserData[1]),
                 )
             );
@@ -95,6 +94,7 @@ class HhUser extends AUser {
 
         $request->setMethod(HttpRequest::HTTP_POST);
         $request->setData($loginData);
+        $request->setOpts(array(CURLOPT_MAXREDIRS => 30));
 
         $response = $requestProvider->sendRequest($request);
         if ($response->getHeader("http_code") != 200 ) {
