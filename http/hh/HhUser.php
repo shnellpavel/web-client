@@ -1,12 +1,6 @@
 <?php
-/**
- * User: shnell
- * Date: 01.03.15
- * Time: 17:25
- */
 
 namespace web_client\http\hh;
-
 
 use web_client\AUser;
 use web_client\exceptions\AuthenticationException;
@@ -32,6 +26,28 @@ class HhUser extends AUser {
         $request->setOpts(array('cookie' => $this->userIdentity->getCookieFile()));
 
         $response = $requestProvider->sendRequest($request);
+
+        if ($response->getHeader("http_code") == 299)
+        {
+            // In this case we've got a page with JS-script that should set a cookie and redirect
+            if (!preg_match("/document\.cookie=[\"']([a-z]+=.*?)[\"'].*?location\.href=[\"'](.*?)[\"']/simu", $response->getBody(), $checkBrowserData)) {
+                throw new AuthenticationException("Fail to find testBrowser cookie during login.");
+            }
+
+            $requestData = new HttpData();
+            $requestData->attempt = 1;
+            $requestData->nocookies = 1;
+            $request = new HttpRequest("https://novosibirsk.hh.ru/account/login", $requestData);
+            $request->setOpts(
+                array(
+                    'cookie'           => $this->userIdentity->getCookieFile(),
+                    CURLOPT_REFERER => 'https://novosibirsk.hh.ru/account/login',
+                    CURLOPT_HTTPHEADER => array("Cookie: ".$checkBrowserData[1]),
+                )
+            );
+
+            $response = $requestProvider->sendRequest($request);
+        }
 
         if ($response->getHeader("http_code") != 200 ) {
             throw new AuthenticationException("Login page is not available!");
