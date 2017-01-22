@@ -27,9 +27,19 @@ class HhUser extends AUser {
 
         $response = $requestProvider->sendRequest($request);
 
+        if ($response->getHeader("http_code") == 200)
+        {
+            // In this case we've got the page tag <meta http-equiv="refresh" ...>. It will not processed by curl.
+            if (preg_match("%<a href=[\"'](.*?)[\"']>Если страница не открывается автоматически в течении нескольких секунд, нажмите на эту надпись</a>%simu", $response->getBody(), $revalidateData)) {
+                $request = new HttpRequest($revalidateData[1]);
+                $request->setOpts(array('cookie' => $this->userIdentity->getCookieFile()));
+                $response = $requestProvider->sendRequest($request);
+            }
+        }
+
         if ($response->getHeader("http_code") == 299)
         {
-            // In this case we've got a page with JS-script that should set a cookie and redirect
+            // In this case we've got the page with JS-script that should set a cookie and redirect
             if (!preg_match("/document\.cookie=[\"']([a-z]+=.*?)[\"'].*?location\.href=[\"'](.*?)[\"']/simu", $response->getBody(), $checkBrowserData)) {
                 throw new AuthenticationException("Fail to find testBrowser cookie during login.");
             }
