@@ -44,10 +44,7 @@ class HhUser extends AUser {
                 throw new AuthenticationException("Fail to find testBrowser cookie during login.");
             }
 
-            $requestData = new HttpData();
-            $requestData->attempt = 1;
-            $requestData->nocookies = 1;
-            $request = new HttpRequest(self::DOMAIN."/account/login", $requestData);
+            $request = new HttpRequest($checkBrowserData[2]);
             $request->setOpts(
                 array(
                     'cookie'           => $this->userIdentity->getCookieFile(),
