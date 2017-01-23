@@ -54,7 +54,11 @@ class HttpRequestProvider extends ARequestProvider {
 
         switch ($request->getMethod()) {
             case HttpRequest::HTTP_GET:
-                curl_setopt($ch, CURLOPT_URL, $request->getUrl()."?".$params);
+                if (empty($params)) {
+                    curl_setopt($ch, CURLOPT_URL, $request->getUrl());
+                } else {
+                    curl_setopt($ch, CURLOPT_URL, $request->getUrl()."?".$params);
+                }
                 curl_setopt($ch, CURLOPT_POST, 0);
                 break;
             case HttpRequest::HTTP_POST:

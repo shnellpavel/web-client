@@ -94,11 +94,20 @@ class HhUser extends AUser {
 
         $request->setMethod(HttpRequest::HTTP_POST);
         $request->setData($loginData);
-        $request->setOpts(array(CURLOPT_MAXREDIRS => 30));
+        $request->setOpts(
+            array(
+                CURLOPT_MAXREDIRS  => 30,
+                'cookie'           => $this->userIdentity->getCookieFile(),
+            )
+        );
 
         $response = $requestProvider->sendRequest($request);
         if ($response->getHeader("http_code") != 200 ) {
-            throw new AuthenticationException("Login page is not available!");
+            throw new AuthenticationException("Could not authenticate!");
+        }
+
+        if (!$this->isAuthenticated()) {
+            throw new AuthenticationException("Could not authenticate!");
         }
     }
 
