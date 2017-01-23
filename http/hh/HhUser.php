@@ -40,7 +40,7 @@ class HhUser extends AUser {
         if ($response->getHeader("http_code") == 299)
         {
             // In this case we've got the page with JS-script that should set a cookie and redirect
-            if (!preg_match("/document\.cookie=[\"']([a-z]+=.*?)[\"'].*?location\.href=[\"'](.*?)[\"']/simu", $response->getBody(), $checkBrowserData)) {
+            if (!preg_match("/document\.cookie=[\"']([a-z]+=.*?);.*?[\"'].*?location\.href=[\"'](.*?)[\"']/simu", $response->getBody(), $checkBrowserData)) {
                 throw new AuthenticationException("Fail to find testBrowser cookie during login.");
             }
 
