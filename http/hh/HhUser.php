@@ -44,11 +44,14 @@ class HhUser extends AUser {
                 throw new AuthenticationException("Fail to find testBrowser cookie during login.");
             }
 
+            $cookie = explode("=", $checkBrowserData[1]);
+            $cookieLine = sprintf("novosibirsk.hh.ru\tFALSE\t/\tFALSE\t0\t%s\t%s", $cookie[0], $cookie[1]);
+            file_put_contents($this->userIdentity->getCookieFile(), $cookieLine, FILE_APPEND);
+
             $request = new HttpRequest($checkBrowserData[2]);
             $request->setOpts(
                 array(
                     'cookie'           => $this->userIdentity->getCookieFile(),
-                    CURLOPT_HTTPHEADER => array("Cookie: ".$checkBrowserData[1]),
                 )
             );
 
